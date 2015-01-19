@@ -133,7 +133,11 @@ def home():
             flask.flash('Something went wrong adding your task')
         return flask.redirect(flask.url_for('home'))
     else:
-        toreturn = '<ul>'
+        toreturn = '<!doctype HTML>'
+        toreturn += '<html>'
+        toreturn += '<head><title>Task Submitter</title></head>'
+        toreturn += '<body>'
+        toreturn += '<ul>'
         for message in flask.get_flashed_messages():
             toreturn += '<li>' + message + '</li>'
         toreturn += '</ul>'
@@ -142,7 +146,9 @@ def home():
         if is_in_any(flask.g.fas_user.groups, PRI_GROUPS):
             toreturn += 'Important: <input type="checkbox" name="important" value="yes"><br />'
         toreturn += '<input type="submit" value="Add">'
-        toreturn += '</form>'
+        toreturn += '</form><br /><br />'
+        toreturn += '<a href="https://github.com/puiterwijk/TaskSubmit">Open source!</a>'
+        toreturn += '</body></html>'
         return toreturn
 
 
