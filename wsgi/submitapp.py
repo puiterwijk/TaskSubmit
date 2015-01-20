@@ -65,7 +65,7 @@ def get_tasks():
 
 def add_task(description, username, important):
     task = {'description': description,
-            'tags': ['Submitter: %s' % username],
+            'tags': ['Submitter:%s' % username],
             'project': 'Submitted'}
     if important:
         task['priority'] = 'H'
