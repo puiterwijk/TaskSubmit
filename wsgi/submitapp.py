@@ -22,6 +22,8 @@
 ACC_GROUPS = ['sysadmin', 'packager', 'ambassadors']
 # Groups that can mark a task as important
 PRI_GROUPS = ['sysadmin-main']
+# OpenID endpoint to use
+OPENID_ENDPOINT = 'https://id.fedoraproject.org/'
 
 ########################
 # No config below this #
@@ -49,6 +51,7 @@ API_HEADERS = {'Authorization': 'ApiKey %s' % API_KEY}
 app = flask.Flask(__name__)
 app.debug = True
 app.secret_key = 'FLASK:%s' % API_KEY
+app.config['FAS_OPENID_ENDPOINT'] = OPENID_ENDPOINT
 FAS = FAS(app)
 
 
