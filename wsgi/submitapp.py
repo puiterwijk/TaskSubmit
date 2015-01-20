@@ -145,6 +145,7 @@ def home():
             toreturn += '<li>' + message + '</li>'
         toreturn += '</ul>'
         toreturn += '<form action="." method="POST">'
+        toreturn += 'Submitter: <input type="text" disabled="disabled" value="%s"><br />' % flask.g.fas_user.username
         toreturn += 'Task description: <input type="text" name="description"><br />'
         if is_in_any(flask.g.fas_user.groups, PRI_GROUPS):
             toreturn += 'Important: <input type="checkbox" name="important" value="yes"><br />'
