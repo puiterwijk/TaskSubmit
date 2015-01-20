@@ -19,7 +19,7 @@
 #################
 
 # Groups that have "normal" access
-ACC_GROUPS = ['sysadmin']
+ACC_GROUPS = ['sysadmin', 'packager', 'ambassadors']
 # Groups that can mark a task as important
 PRI_GROUPS = ['sysadmin-main']
 
