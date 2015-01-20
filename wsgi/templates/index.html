@@ -1,0 +1,66 @@
+<!doctype HTML>
+<html>
+    <head>
+        <title>Task Submitter</title>
+
+        {% if use_bootstrap %}
+            <!-- Bootstrap -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        {% endif %}
+    </head>
+    <body>
+        <div class="jumbotron">
+            <div class="container">
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {% if category == "danger" %}
+                            <strong>error: </strong> {{ message }}
+                        {% else %}
+                            <strong>{{ category }}: </strong> {{ message }}
+                        {% endif %}
+                    </div>
+                {% else %}
+                <br />
+                {% endfor %}
+
+                <form action="." method="POST">
+                    <div class="row">
+                        <div class="col-md-2">
+                            Submitter:
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" disabled="disabled" value="{{ username }}"><br />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            Task description:
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="description"><br />
+                        </div>
+                    </div>
+                    {% if can_do_important %}
+                        <div class="row">
+                            <div class="col-md-2">
+                                Important:
+                            </div>
+                            <div class="col-md-4">
+                                <input type="checkbox" name="important" value="yes"><br />
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input class="btn btn-primary" type="submit" value="Add">
+                        </div>
+                        <div class="col-md-4">
+                            <a class="btn btn-link" target="_blank" href="https://github.com/puiterwijk/TaskSubmit">Open source!</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

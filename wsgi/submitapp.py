@@ -24,6 +24,8 @@ ACC_GROUPS = ['sysadmin', 'packager', 'ambassadors']
 PRI_GROUPS = ['sysadmin-main']
 # OpenID endpoint to use
 OPENID_ENDPOINT = 'https://id.fedoraproject.org/'
+# Whether to use bootstrap to make it look cooler
+USE_BOOTSTRAP = True
 
 ########################
 # No config below this #
@@ -38,7 +40,7 @@ from flask.ext.fas_openid import FAS
 import flask
 from flask import request
 
-if not 'API_KEY' in os.environ:
+if 'API_KEY' not in os.environ:
     print 'Please specify the Inthe.AM API key in the API_KEY environment variable'
     sys.exit(1)
 
@@ -105,10 +107,11 @@ def any_group_required(function):
             return flask.redirect(flask.url_for('login'))
         elif not flask.g.fas_user.cla_done:  # pragma: no cover
             flask.flash('You must sign the CLA (Contributor License '
-                        'Agreement to use tasksubmit', 'errors')
+                        'Agreement to use tasksubmit', 'danger')
             return flask.redirect(flask.url_for('error_auth'))
         elif not is_in_any(ALL_GROUPS, flask.g.fas_user.groups):
-            flask.flash('You must be in one of the groups %s' % ALL_GROUPS)
+            flask.flash('You must be in one of the groups %s' % ALL_GROUPS,
+                        'danger')
             return flask.redirect(flask.url_for('error_auth'))
         return function(*args, **kwargs)
     return decorated_function
@@ -120,40 +123,29 @@ def home():
     if request.method == 'POST':
         if 'description' not in request.form or \
                 request.form['description'].strip() == '':
-            flask.flash('Please enter a description')
+            flask.flash('Please enter a description',
+                        'warning')
             return flask.redirect(flask.url_for('home'))
         if 'important' in request.form and \
                 not is_in_any(flask.g.fas_user.groups, PRI_GROUPS):
             flask.flash('Important is unavailable for you ' +
-                        '(needs one of groups: %s)' % PRI_GROUPS)
+                        '(needs one of groups: %s)' % PRI_GROUPS,
+                        'danger')
             return flask.redirect(flask.url_for('home'))
 
         if add_task(request.form['description'].strip(),
                     flask.g.fas_user.username,
                     'important' in request.form) == 201:
-            flask.flash('Your task has been submitted')
+            flask.flash('Your task has been submitted', 'success')
         else:
-            flask.flash('Something went wrong adding your task')
+            flask.flash('Something went wrong adding your task', 'danger')
         return flask.redirect(flask.url_for('home'))
     else:
-        toreturn = '<!doctype HTML>'
-        toreturn += '<html>'
-        toreturn += '<head><title>Task Submitter</title></head>'
-        toreturn += '<body>'
-        toreturn += '<ul>'
-        for message in flask.get_flashed_messages():
-            toreturn += '<li>' + message + '</li>'
-        toreturn += '</ul>'
-        toreturn += '<form action="." method="POST">'
-        toreturn += 'Submitter: <input type="text" disabled="disabled" value="%s"><br />' % flask.g.fas_user.username
-        toreturn += 'Task description: <input type="text" name="description"><br />'
-        if is_in_any(flask.g.fas_user.groups, PRI_GROUPS):
-            toreturn += 'Important: <input type="checkbox" name="important" value="yes"><br />'
-        toreturn += '<input type="submit" value="Add">'
-        toreturn += '</form><br /><br />'
-        toreturn += '<a href="https://github.com/puiterwijk/TaskSubmit">Open source!</a>'
-        toreturn += '</body></html>'
-        return toreturn
+        return flask.render_template(
+            'index.html',
+            use_bootstrap=USE_BOOTSTRAP,
+            username=flask.g.fas_user.username,
+            can_do_important=is_in_any(flask.g.fas_user.groups, PRI_GROUPS))
 
 
 @FAS.postlogin
